@@ -50,6 +50,11 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
+            contract-name: consumer-interface
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/consumer-interface.clar
+            clarity-version: 2
+        - emulated-contract-publish:
             contract-name: incentive-token
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/incentive-token.clar
@@ -58,6 +63,11 @@ plan:
             contract-name: iot-data
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/iot-data.clar
+            clarity-version: 2
+        - emulated-contract-publish:
+            contract-name: product-registry
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/product-registry.clar
             clarity-version: 2
         - emulated-contract-publish:
             contract-name: quality-check
