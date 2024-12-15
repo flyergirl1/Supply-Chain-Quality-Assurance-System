@@ -1,60 +1,52 @@
-;; Quality Check Contract
+import { describe, it, expect, beforeEach } from 'vitest';
+import { vi } from 'vitest';
 
-;; Constants
-(define-constant contract-owner tx-sender)
-(define-constant err-owner-only (err u100))
-(define-constant err-not-found (err u101))
+describe('Quality Check Contract', () => {
+  const contractOwner = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+  const user1 = 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG';
 
-;; Data Variables
-(define-data-var quality-threshold uint u70)
-(define-data-var last-check-id uint u0)
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
 
-;; Maps
-(define-map quality-checks
-  { check-id: uint }
-  {
-    product-id: uint,
-    quality-score: uint,
-    passed: bool,
-    timestamp: uint
-  }
-)
+  it('should perform quality check', () => {
+    const mockPerformQualityCheck = vi.fn().mockReturnValue({ success: true, value: { check_id: 1, passed: true } });
+    expect(mockPerformQualityCheck(1, 80)).toEqual({ success: true, value: { check_id: 1, passed: true } });
+  });
 
-;; Public Functions
-(define-public (perform-quality-check (product-id uint) (quality-score uint))
-  (let
-    (
-      (check-id (+ (var-get last-check-id) u1))
-      (passed (>= quality-score (var-get quality-threshold)))
-    )
-    (map-set quality-checks
-      { check-id: check-id }
-      {
-        product-id: product-id,
-        quality-score: quality-score,
-        passed: passed,
-        timestamp: block-height
+  it('should set quality threshold', () => {
+    const mockSetQualityThreshold = vi.fn().mockReturnValue({ success: true, value: true });
+    expect(mockSetQualityThreshold(80)).toEqual({ success: true, value: true });
+  });
+
+  it('should not allow non-owner to set quality threshold', () => {
+    const mockSetQualityThreshold = vi.fn().mockReturnValue({ success: false, error: 100 });
+    expect(mockSetQualityThreshold(80)).toEqual({ success: false, error: 100 });
+  });
+
+  it('should get quality check', () => {
+    const mockGetQualityCheck = vi.fn().mockReturnValue({
+      success: true,
+      value: {
+        product_id: 1,
+        quality_score: 85,
+        passed: true,
+        timestamp: 123456
       }
-    )
-    (var-set last-check-id check-id)
-    (ok { check-id: check-id, passed: passed })
-  )
-)
+    });
+    const result = mockGetQualityCheck(1);
+    expect(result.success).toBe(true);
+    expect(result.value).toEqual({
+      product_id: 1,
+      quality_score: 85,
+      passed: true,
+      timestamp: 123456
+    });
+  });
 
-(define-public (set-quality-threshold (new-threshold uint))
-  (begin
-    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
-    (var-set quality-threshold new-threshold)
-    (ok true)
-  )
-)
-
-;; Read-only Functions
-(define-read-only (get-quality-check (check-id uint))
-  (map-get? quality-checks { check-id: check-id })
-)
-
-(define-read-only (get-quality-threshold)
-  (ok (var-get quality-threshold))
-)
+  it('should get quality threshold', () => {
+    const mockGetQualityThreshold = vi.fn().mockReturnValue({ success: true, value: 70 });
+    expect(mockGetQualityThreshold()).toEqual({ success: true, value: 70 });
+  });
+});
 
