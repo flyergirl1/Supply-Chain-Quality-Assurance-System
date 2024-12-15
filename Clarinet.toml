@@ -15,6 +15,11 @@ path = 'contracts/iot-data.clar'
 clarity_version = 2
 epoch = 2.5
 
+[contracts.product-registry]
+path = 'contracts/product-registry.clar'
+clarity_version = 2
+epoch = 2.5
+
 [contracts.quality-check]
 path = 'contracts/quality-check.clar'
 clarity_version = 2
